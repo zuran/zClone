@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <SDL.h>
+#include <vector>
 
 int main(int argc, char** args) {
   std::cout << "Hello World!\n";
@@ -16,9 +17,13 @@ int main(int argc, char** args) {
     return 1;
   }
 
+  int kWidth = 256, kHeight = 240, kMag = 3;
+
+
+
   window =
-      SDL_CreateWindow("Ex.", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                       1280, 760, SDL_WINDOW_SHOWN);
+      SDL_CreateWindow("Ex.", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                       kWidth * kMag, kHeight * kMag, SDL_WINDOW_SHOWN);
   if (!window) {
     std::cout << "Error creating window" << std::endl;
     system("pause");
@@ -33,10 +38,60 @@ int main(int argc, char** args) {
     return 1;
   }
 
-  SDL_FillRect(winSurface, nullptr,
-               SDL_MapRGB(winSurface->format, 255, 255, 255));
+  // Create back buffer
+  SDL_Surface* backBuffer;
+  backBuffer = SDL_CreateRGBSurfaceWithFormat(0, winSurface->w, winSurface->h,
+                                              0, winSurface->format->format);
+  SDL_FillRect(backBuffer, nullptr, 0);
+
+  // Swap to front
+  SDL_BlitScaled(backBuffer, nullptr, winSurface, nullptr);
   SDL_UpdateWindowSurface(window);
+
+  // Load image
+  static std::string path = SDL_GetBasePath();
+  SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
+  SDL_Surface* image = SDL_LoadBMP((path + "Overworld.bmp").c_str());
+  
+  int iWidth = image->w;
+  int iHeight = image->h;
+  int totalSize = iWidth * iHeight;
+  std::vector<int> pixels;
+  pixels.reserve(totalSize);
+
+  SDL_LockSurface(image);
+  uint32_t* iPixels = static_cast<uint32_t*>(image->pixels);
+  for (int i = 0; i < totalSize; ++i) {
+    pixels.push_back(iPixels[i]);
+  }
+  SDL_UnlockSurface(image);
+
+  SDL_LockSurface(backBuffer);
+  uint32_t* bPixels = static_cast<uint32_t*>(backBuffer->pixels);
+  for (int i = 0; i < iHeight; ++i) {
+    for (int j = 0; j < iWidth; j++) {
+      if (i >= kWidth || j >= kHeight) continue;
+      const int imagePos = j + (i * iWidth);
+      bPixels[i] = iPixels[imagePos];
+    }
+  }
+  SDL_UnlockSurface(backBuffer);
+
+  // Swap to front
+  SDL_BlitScaled(backBuffer, nullptr, winSurface, nullptr);
+  SDL_UpdateWindowSurface(window);
+
+
+  //SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, image);
+  //SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+  //SDL_RenderPresent(renderer);
+
+
   system("pause");
+  //SDL_DestroyTexture(texture);
+  SDL_FreeSurface(image);
+  SDL_DestroyRenderer(renderer);
+
   SDL_DestroyWindow(window);
   SDL_Quit();
   return 0;
