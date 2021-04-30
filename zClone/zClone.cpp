@@ -81,14 +81,15 @@ int main(int argc, char** args) {
   SDL_BlitScaled(backBuffer, nullptr, winSurface, nullptr);
   SDL_UpdateWindowSurface(window);
 
+  SDL_Rect rect = {0, 0, iWidth * kMag, iHeight * kMag};
 
-  //SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, image);
-  //SDL_RenderCopy(renderer, texture, nullptr, nullptr);
-  //SDL_RenderPresent(renderer);
+  SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, image);
+  SDL_RenderCopy(renderer, texture, nullptr, &rect);
+  SDL_RenderPresent(renderer);
 
 
   system("pause");
-  //SDL_DestroyTexture(texture);
+  SDL_DestroyTexture(texture);
   SDL_FreeSurface(image);
   SDL_DestroyRenderer(renderer);
 
