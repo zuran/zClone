@@ -5,6 +5,8 @@
 #include <SDL.h>
 #include <vector>
 
+#include "Color.h"
+
 int main(int argc, char** args) {
   std::cout << "Hello World!\n";
 

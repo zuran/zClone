@@ -9,6 +9,10 @@ class Color {
   static const SDL_PixelFormat* kFormat;
   static Color GetAlphaBlend(const Color& source, const Color& destination);
 
+  inline static Color Red() { return Color(255, 0, 0); }
+  inline static Color Green() { return Color(0, 255, 0); }
+  inline static Color Pink() { return Color(252, 197, 224); }
+
   Color() : Color(0) {}
   Color(uint32_t value) : value_(value) {}
   Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255);
