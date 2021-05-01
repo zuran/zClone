@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <SDL.h>
+#include <SDL_image.h>
 #include <vector>
 
 #include "Color.h"
@@ -53,41 +54,52 @@ int main(int argc, char** args) {
   // Load image
   static std::string path = SDL_GetBasePath();
   SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
-  SDL_Surface* image = SDL_LoadBMP((path + "Overworld.bmp").c_str());
-  
+
+  std::string p = (path + "character.png");
+  const char* tmpPath = p.c_str();
+
+  SDL_Surface* image =  // SDL_LoadBMP((path + "character.bmp").c_str());
+      IMG_Load(tmpPath);
+
   int iWidth = image->w;
   int iHeight = image->h;
   int totalSize = iWidth * iHeight;
   std::vector<int> pixels;
   pixels.reserve(totalSize);
 
-  SDL_LockSurface(image);
-  uint32_t* iPixels = static_cast<uint32_t*>(image->pixels);
-  for (int i = 0; i < totalSize; ++i) {
-    pixels.push_back(iPixels[i]);
-  }
-  SDL_UnlockSurface(image);
+  //SDL_LockSurface(image);
+  //uint32_t* iPixels = static_cast<uint32_t*>(image->pixels);
+  //for (int i = 0; i < totalSize; ++i) {
+  //  pixels.push_back(iPixels[i]);
+  //}
+  //SDL_UnlockSurface(image);
 
-  SDL_LockSurface(backBuffer);
-  uint32_t* bPixels = static_cast<uint32_t*>(backBuffer->pixels);
-  for (int i = 0; i < iHeight; ++i) {
-    for (int j = 0; j < iWidth; j++) {
-      if (i >= kWidth || j >= kHeight) continue;
-      const int imagePos = j + (i * iWidth);
-      bPixels[i] = iPixels[imagePos];
-    }
-  }
-  SDL_UnlockSurface(backBuffer);
+  //SDL_LockSurface(backBuffer);
+  //uint32_t* bPixels = static_cast<uint32_t*>(backBuffer->pixels);
+  //for (int i = 0; i < iHeight; ++i) {
+  //  for (int j = 0; j < iWidth; j++) {
+  //    if (i >= kWidth || j >= kHeight) continue;
+  //    const int imagePos = j + (i * iWidth);
+  //    bPixels[i] = iPixels[imagePos];
+  //  }
+  //}
+  //SDL_UnlockSurface(backBuffer);
 
   // Swap to front
   SDL_BlitScaled(backBuffer, nullptr, winSurface, nullptr);
   SDL_UpdateWindowSurface(window);
 
-  SDL_Rect rect = {0, 0, iWidth * kMag, iHeight * kMag};
-
+  //SDL_Rect rect = {0, 0, iWidth * kMag, iHeight * kMag};
+  SDL_Rect src = {0, 4, 16, 24};
+  SDL_Rect dest = {10, 10, src.w * kMag, src.h * kMag};
+  
+  SDL_Rect dest2 = {100, 100, src.w * kMag, src.h * kMag};
+  SDL_Point center = {8 * kMag, 12 * kMag};
+  
   SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, image);
-  SDL_RenderCopy(renderer, texture, nullptr, &rect);
-  SDL_RenderPresent(renderer);
+  SDL_RenderCopy(renderer, texture, &src, &dest2);
+  SDL_RenderCopyEx(renderer, texture, &src, &dest2, 45.0f, &center, SDL_FLIP_NONE);
+  SDL_RenderPresent(renderer);  
 
 
   system("pause");
