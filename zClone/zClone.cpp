@@ -20,7 +20,7 @@ int main(int argc, char** args) {
     return 1;
   }
 
-  int kWidth = 256, kHeight = 240, kMag = 3;
+  int kWidth = 256, kHeight = 240, kMag = 4;
 
 
 
