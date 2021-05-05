@@ -12,4 +12,12 @@ class Screen {
   void SwapBuffer();
 
  private:
+  Screen(const Screen& screen);
+  Screen& operator=(const Screen& screen);
+
+  void Clear();
+
+  SDL_Renderer* renderer_;
+  SDL_Texture* texture_;
+  SDL_PixelFormat* pixel_format_;
 };
