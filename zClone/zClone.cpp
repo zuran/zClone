@@ -55,7 +55,7 @@ int main(int argc, char** args) {
   static std::string path = SDL_GetBasePath();
   SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
 
-  std::string p = (path + "character.png");
+  std::string p = (path + "turtle_walk.png");
   const char* tmpPath = p.c_str();
 
   SDL_Surface* image =  // SDL_LoadBMP((path + "character.bmp").c_str());
@@ -90,19 +90,83 @@ int main(int argc, char** args) {
   SDL_UpdateWindowSurface(window);
 
   //SDL_Rect rect = {0, 0, iWidth * kMag, iHeight * kMag};
-  SDL_Rect src = {0, 4, 16, 24};
+  SDL_Rect src = {0, 0, 16, 16};
   SDL_Rect dest = {10, 10, src.w * kMag, src.h * kMag};
   
   SDL_Rect dest2 = {100, 100, src.w * kMag, src.h * kMag};
-  SDL_Point center = {8 * kMag, 12 * kMag};
+  SDL_Point center = {8 * kMag, 8 * kMag};
   
   SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, image);
-  SDL_RenderCopy(renderer, texture, &src, &dest2);
-  SDL_RenderCopyEx(renderer, texture, &src, &dest2, 45.0f, &center, SDL_FLIP_NONE);
-  SDL_RenderPresent(renderer);  
+  //SDL_RenderCopy(renderer, texture, &src, &dest2);
+  //SDL_RenderCopyEx(renderer, texture, &src, &dest2, 45.0f, &center, SDL_FLIP_NONE);
+  //SDL_RenderPresent(renderer);  
+
+  SDL_Rect walkUp0 = {0, 0, 16, 16};
+  SDL_Rect walkUp1 = {16, 0, 16, 16};
+
+  SDL_Rect walkDown0 = {0, 16, 16, 16};
+  SDL_Rect walkDown1 = {16, 16, 16, 16};
+
+  SDL_Rect walkRight0 = {0, 32, 16, 16};
+  SDL_Rect walkRight1 = {16, 32, 16, 16};
+
+  SDL_Rect loc = {kWidth * kMag / 2, kHeight * kMag / 2, 16 * kMag, 16 * kMag};
+
+  SDL_Rect frame0 = walkDown0;
+  SDL_Rect frame1 = walkDown1;
+
+  bool isRunning = true;
+  bool isFlipped = false;
+  while (isRunning) {
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+      if (event.type == SDL_QUIT) {
+        isRunning = false;
+      }
+      else if (event.type == SDL_KEYDOWN) {
+        isFlipped = false;
+        switch(event.key.keysym.sym) { 
+        case SDLK_DOWN:
+          frame0 = walkDown0;
+          frame1 = walkDown1;
+          break;
+        case SDLK_UP:
+          frame0 = walkUp0;
+          frame1 = walkUp1;
+          break;
+        case SDLK_RIGHT:
+          frame0 = walkRight0;
+          frame1 = walkRight1;
+          break;
+        case SDLK_LEFT:
+          frame0 = walkRight0;
+          frame1 = walkRight1;
+          isFlipped = true;
+          break;
+        default:
+          frame0 = walkDown0;
+          frame1 = walkDown1;
+          break;   
+        }
+      }
+    }
+    if (!isRunning) break;
+    //SDL_RenderCopy(renderer, texture, &frame0, &loc);
+    SDL_RenderCopyEx(renderer, texture, &frame0, &loc, 0.0f, &center,
+                     isFlipped ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+    SDL_RenderPresent(renderer);
+    SDL_Delay(300);
+    SDL_RenderClear(renderer);
+    SDL_RenderCopyEx(renderer, texture, &frame1, &loc, 0.0f, &center,
+                     isFlipped ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+    SDL_RenderPresent(renderer);
+    SDL_Delay(300);
+    SDL_RenderClear(renderer);
+  }
+  
 
 
-  system("pause");
+
   SDL_DestroyTexture(texture);
   SDL_FreeSurface(image);
   SDL_DestroyRenderer(renderer);
