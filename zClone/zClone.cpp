@@ -115,10 +115,15 @@ int main(int argc, char** args) {
   SDL_Rect frame0 = walkDown0;
   SDL_Rect frame1 = walkDown1;
 
+  int xDir = 1;
+  int yDir = 0;
+
   bool isRunning = true;
   bool isFlipped = false;
   while (isRunning) {
     SDL_Event event;
+    xDir = 0;
+    yDir = 0;
     while (SDL_PollEvent(&event)) {
       if (event.type == SDL_QUIT) {
         isRunning = false;
@@ -129,19 +134,27 @@ int main(int argc, char** args) {
         case SDLK_DOWN:
           frame0 = walkDown0;
           frame1 = walkDown1;
+          xDir = 0;
+          yDir = 1;
           break;
         case SDLK_UP:
           frame0 = walkUp0;
           frame1 = walkUp1;
+          xDir = 0;
+          yDir = -1;
           break;
         case SDLK_RIGHT:
           frame0 = walkRight0;
           frame1 = walkRight1;
+          xDir = 1;
+          yDir = 0;
           break;
         case SDLK_LEFT:
           frame0 = walkRight0;
           frame1 = walkRight1;
           isFlipped = true;
+          xDir = -1;
+          yDir = 0;
           break;
         default:
           frame0 = walkDown0;
@@ -151,16 +164,21 @@ int main(int argc, char** args) {
       }
     }
     if (!isRunning) break;
+    loc.x += xDir * kMag * 2;
+    loc.y += yDir * kMag * 2;
     //SDL_RenderCopy(renderer, texture, &frame0, &loc);
     SDL_RenderCopyEx(renderer, texture, &frame0, &loc, 0.0f, &center,
                      isFlipped ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
     SDL_RenderPresent(renderer);
-    SDL_Delay(300);
+    SDL_Delay(150);
+    
+    loc.x += xDir * kMag * 2;
+    loc.y += yDir * kMag * 2;
     SDL_RenderClear(renderer);
     SDL_RenderCopyEx(renderer, texture, &frame1, &loc, 0.0f, &center,
                      isFlipped ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
     SDL_RenderPresent(renderer);
-    SDL_Delay(300);
+    SDL_Delay(150);
     SDL_RenderClear(renderer);
   }
   
