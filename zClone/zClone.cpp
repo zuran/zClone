@@ -5,6 +5,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <vector>
+#include <cmath>
 
 #include "Color.h"
 #include "json.hpp"
@@ -62,7 +63,10 @@ int main(int argc, char** args) {
 
   // Load image
   static std::string path = SDL_GetBasePath();
-  SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
+  SDL_Renderer* renderer =
+      SDL_CreateRenderer(window, -1,
+                         SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC |
+                             SDL_RENDERER_TARGETTEXTURE);
 
   std::string p = (path + "../Assets/turtle_walk.png");
   const char* tmpPath = p.c_str();
@@ -119,7 +123,7 @@ int main(int argc, char** args) {
   SDL_Rect walkRight0 = {0, 32, 16, 16};
   SDL_Rect walkRight1 = {16, 32, 16, 16};
 
-  SDL_Rect loc = {kWidth * kMag / 2, kHeight * kMag / 2, 16 * kMag, 16 * kMag};
+  SDL_Rect loc = {kWidth * kMag / 2, 64 * kMag + 64*kMag, 16 * kMag, 16 * kMag};
 
   SDL_Rect frame0 = walkDown0;
   SDL_Rect frame1 = walkDown1;
@@ -130,7 +134,7 @@ int main(int argc, char** args) {
   float kFps = 30.0;
   float kFrameTime = 1000.0 / kFps;
   int currentTicks = SDL_GetTicks();
-  float kSpeed = 400.0f;
+  float kSpeed = 200.0f;
 
   bool isRunning = true;
   bool isFlipped = false;
@@ -139,7 +143,37 @@ int main(int argc, char** args) {
   float y = static_cast<float>(loc.y);
   float dt = 0.0;
 
-  
+  SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+  SDL_Texture* gridTex =
+      SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888,
+                        SDL_TEXTUREACCESS_TARGET, kWidth , kHeight );
+  SDL_SetRenderTarget(renderer, gridTex);
+
+  // try drawing grid to texture first
+  // Draw Major Grid
+  SDL_SetRenderDrawColor(renderer, 240, 240, 240, SDL_ALPHA_OPAQUE);
+  for (int row = 0; row < 11; ++row) {
+    int y = 64  + (row * 16 );
+    SDL_RenderDrawLine(renderer, 0, y, kWidth , y);
+  }
+  for (int col = 0; col < 16; ++col) {
+    int x = col * 16 ;
+    SDL_RenderDrawLine(renderer, x, 64 , x, kHeight );
+  }
+
+  // Draw Minor Grid
+  SDL_SetRenderDrawColor(renderer, 100, 100, 100, SDL_ALPHA_OPAQUE);
+  for (int row = 0; row < 11; ++row) {
+    int y = 72  + (row * 16 );
+    SDL_RenderDrawLine(renderer, 0, y, kWidth , y);
+  }
+  for (int col = 0; col < 16; ++col) {
+    int x = col * 16  + 8 ;
+    SDL_RenderDrawLine(renderer, x, 64 , x, kHeight );
+  }
+  SDL_SetRenderTarget(renderer, nullptr);
+
   while (isRunning) {
     int frameStart = SDL_GetTicks();
 
@@ -160,6 +194,10 @@ int main(int argc, char** args) {
         isFlipped = false;
         xDir = 0;
         yDir = 1;
+        // align to horizontal subgrid
+        // subpixel loc is x,y
+        float gridX = std::roundf(x / (kMag * 8));
+        x = gridX * kMag * 8;
       } else if (!key_state[SDL_SCANCODE_DOWN] &&
                   key_state[SDL_SCANCODE_UP]) {
         frame0 = walkUp0;
@@ -167,12 +205,20 @@ int main(int argc, char** args) {
         isFlipped = false;
         xDir = 0;
         yDir = -1;
+        // align to horizontal subgrid
+        // subpixel loc is x,y
+        float gridX = std::roundf(x / (kMag * 8));
+        x = gridX * kMag * 8;
       } else if (key_state[SDL_SCANCODE_RIGHT] && !key_state[SDL_SCANCODE_LEFT]) {
         frame0 = walkRight0;
         frame1 = walkRight1;
         isFlipped = false;
         xDir = 1;
         yDir = 0;
+        // align to vertical subgrid
+        // subpixel loc is x,y
+        float gridY = std::roundf(y / (kMag * 8));
+        y = gridY * kMag * 8;
       } else if (!key_state[SDL_SCANCODE_RIGHT] &&
                   key_state[SDL_SCANCODE_LEFT]) {
         frame0 = walkRight0;
@@ -180,6 +226,10 @@ int main(int argc, char** args) {
         isFlipped = true;
         xDir = -1;
         yDir = 0;
+        // align to vertical subgrid
+        // subpixel loc is x,y
+        float gridY = std::roundf(y / (kMag * 8));
+        y = gridY * kMag * 8;
       } else {
         xDir = 0;
         yDir = 0;
@@ -191,10 +241,6 @@ int main(int argc, char** args) {
       
     }
 
-    if (eventCount > 0) {
-      std::cout << eventCount << std::endl;
-    }
-
     if (!isRunning) break;
 
     x += xDir * kSpeed * dt;
@@ -202,11 +248,20 @@ int main(int argc, char** args) {
   
     loc.x = static_cast<int>(x);
     loc.y = static_cast<int>(y);
+    
+    
     //SDL_RenderCopy(renderer, texture, &frame0, &loc);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
+
+    SDL_RenderCopy(renderer, gridTex, nullptr, nullptr);
+
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 100);
+    SDL_RenderFillRect(renderer, &loc);
+    
+
     SDL_RenderCopyEx(renderer, texture, &frame0, &loc, 0.0f, &center,
                      isFlipped ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
-    SDL_RenderPresent(renderer);
     //SDL_Delay(150);
     
     //loc.x += xDir * kMag * 2;
@@ -216,7 +271,14 @@ int main(int argc, char** args) {
     //                 isFlipped ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
     //SDL_RenderPresent(renderer);
     //SDL_Delay(150);
+    
+
+    
+
+    SDL_RenderPresent(renderer);
+    
     SDL_Delay(10);
+
 
     int frameEnd = SDL_GetTicks();
     int totalFrameTime = frameEnd - frameStart;
@@ -230,7 +292,8 @@ int main(int argc, char** args) {
   
 
 
-
+  SDL_DestroyTexture(gridTex);
+  
   SDL_DestroyTexture(texture);
   SDL_FreeSurface(image);
   SDL_DestroyRenderer(renderer);
