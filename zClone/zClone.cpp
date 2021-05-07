@@ -58,11 +58,13 @@ int main(int argc, char** args) {
   SDL_BlitScaled(backBuffer, nullptr, winSurface, nullptr);
   SDL_UpdateWindowSurface(window);
 
+  std::cout << SDL_GetBasePath() << std::endl;
+
   // Load image
   static std::string path = SDL_GetBasePath();
   SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
 
-  std::string p = (path + "turtle_walk.png");
+  std::string p = (path + "../Assets/turtle_walk.png");
   const char* tmpPath = p.c_str();
 
   SDL_Surface* image =  // SDL_LoadBMP((path + "character.bmp").c_str());
@@ -125,68 +127,105 @@ int main(int argc, char** args) {
   int xDir = 1;
   int yDir = 0;
 
+  float kFps = 30.0;
+  float kFrameTime = 1000.0 / kFps;
+  int currentTicks = SDL_GetTicks();
+  float kSpeed = 400.0f;
+
   bool isRunning = true;
   bool isFlipped = false;
+
+  float x = static_cast<float>(loc.x);
+  float y = static_cast<float>(loc.y);
+  float dt = 0.0;
+
+  
   while (isRunning) {
+    int frameStart = SDL_GetTicks();
+
     SDL_Event event;
-    xDir = 0;
-    yDir = 0;
+    int eventCount = 0;
+    
     while (SDL_PollEvent(&event)) {
+      eventCount++;
       if (event.type == SDL_QUIT) {
         isRunning = false;
       }
-      else if (event.type == SDL_KEYDOWN) {
+      
+      const Uint8* key_state = SDL_GetKeyboardState(nullptr);
+
+      if (key_state[SDL_SCANCODE_DOWN] && !key_state[SDL_SCANCODE_UP]) {
+        frame0 = walkDown0;
+        frame1 = walkDown1;
         isFlipped = false;
-        switch(event.key.keysym.sym) { 
-        case SDLK_DOWN:
-          frame0 = walkDown0;
-          frame1 = walkDown1;
-          xDir = 0;
-          yDir = 1;
-          break;
-        case SDLK_UP:
-          frame0 = walkUp0;
-          frame1 = walkUp1;
-          xDir = 0;
-          yDir = -1;
-          break;
-        case SDLK_RIGHT:
-          frame0 = walkRight0;
-          frame1 = walkRight1;
-          xDir = 1;
-          yDir = 0;
-          break;
-        case SDLK_LEFT:
-          frame0 = walkRight0;
-          frame1 = walkRight1;
-          isFlipped = true;
-          xDir = -1;
-          yDir = 0;
-          break;
-        default:
-          frame0 = walkDown0;
-          frame1 = walkDown1;
-          break;   
-        }
+        xDir = 0;
+        yDir = 1;
+      } else if (!key_state[SDL_SCANCODE_DOWN] &&
+                  key_state[SDL_SCANCODE_UP]) {
+        frame0 = walkUp0;
+        frame1 = walkUp1;
+        isFlipped = false;
+        xDir = 0;
+        yDir = -1;
+      } else if (key_state[SDL_SCANCODE_RIGHT] && !key_state[SDL_SCANCODE_LEFT]) {
+        frame0 = walkRight0;
+        frame1 = walkRight1;
+        isFlipped = false;
+        xDir = 1;
+        yDir = 0;
+      } else if (!key_state[SDL_SCANCODE_RIGHT] &&
+                  key_state[SDL_SCANCODE_LEFT]) {
+        frame0 = walkRight0;
+        frame1 = walkRight1;
+        isFlipped = true;
+        xDir = -1;
+        yDir = 0;
+      } else {
+        xDir = 0;
+        yDir = 0;
       }
+        //break;
+      
+        //isMoving = false;
+        //break;
+      
     }
+
+    if (eventCount > 0) {
+      std::cout << eventCount << std::endl;
+    }
+
     if (!isRunning) break;
-    loc.x += xDir * kMag * 2;
-    loc.y += yDir * kMag * 2;
+
+    x += xDir * kSpeed * dt;
+    y += yDir * kSpeed * dt;
+  
+    loc.x = static_cast<int>(x);
+    loc.y = static_cast<int>(y);
     //SDL_RenderCopy(renderer, texture, &frame0, &loc);
+    SDL_RenderClear(renderer);
     SDL_RenderCopyEx(renderer, texture, &frame0, &loc, 0.0f, &center,
                      isFlipped ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
     SDL_RenderPresent(renderer);
-    SDL_Delay(150);
+    //SDL_Delay(150);
     
-    loc.x += xDir * kMag * 2;
-    loc.y += yDir * kMag * 2;
-    SDL_RenderClear(renderer);
-    SDL_RenderCopyEx(renderer, texture, &frame1, &loc, 0.0f, &center,
-                     isFlipped ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
-    SDL_RenderPresent(renderer);
-    SDL_Delay(150);
-    SDL_RenderClear(renderer);
+    //loc.x += xDir * kMag * 2;
+    //loc.y += yDir * kMag * 2;
+    //SDL_RenderClear(renderer);
+    //SDL_RenderCopyEx(renderer, texture, &frame1, &loc, 0.0f, &center,
+    //                 isFlipped ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+    //SDL_RenderPresent(renderer);
+    //SDL_Delay(150);
+    SDL_Delay(10);
+
+    int frameEnd = SDL_GetTicks();
+    int totalFrameTime = frameEnd - frameStart;
+    
+    dt = totalFrameTime / 1000.0f;
+
+    if(totalFrameTime < kFrameTime) {
+      //SDL_Delay(static_cast<int>(kFrameTime - totalFrameTime));
+    }
   }
   
 
