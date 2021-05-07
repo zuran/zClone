@@ -7,9 +7,16 @@
 #include <vector>
 
 #include "Color.h"
+#include "json.hpp"
+
+using json = nlohmann::json;
 
 int main(int argc, char** args) {
   std::cout << "Hello World!\n";
+  json j;
+  j["test"] = 3.5;
+  std::cout << j << std::endl;
+
 
   SDL_Surface* winSurface = nullptr;
   SDL_Window* window = nullptr;
