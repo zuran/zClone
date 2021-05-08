@@ -62,20 +62,23 @@ int main(int argc, char** args) {
   std::cout << SDL_GetBasePath() << std::endl;
 
   // Load image
+  Uint32 renderFlags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC |
+                       SDL_RENDERER_TARGETTEXTURE;
   static std::string path = SDL_GetBasePath();
-  SDL_Renderer* renderer =
-      SDL_CreateRenderer(window, -1,
-                         SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC |
-                             SDL_RENDERER_TARGETTEXTURE);
+  SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, renderFlags);
 
   std::string p = (path + "../Assets/turtle_walk.png");
   const char* tmpPath = p.c_str();
 
-  SDL_Surface* image =  // SDL_LoadBMP((path + "character.bmp").c_str());
+  SDL_Surface* characterMovementImage =  // SDL_LoadBMP((path + "character.bmp").c_str());
       IMG_Load(tmpPath);
 
-  int iWidth = image->w;
-  int iHeight = image->h;
+  std::string levelPath = (path + "../Assets/map_area0.png");
+  SDL_Surface* areaOneImage = IMG_Load(levelPath.c_str());
+  SDL_Rect levelDisplayRect = {0, 64 * kMag, 256 * kMag, 176 * kMag};
+
+  int iWidth = characterMovementImage->w;
+  int iHeight = characterMovementImage->h;
   int totalSize = iWidth * iHeight;
   std::vector<int> pixels;
   pixels.reserve(totalSize);
@@ -109,7 +112,9 @@ int main(int argc, char** args) {
   SDL_Rect dest2 = {100, 100, src.w * kMag, src.h * kMag};
   SDL_Point center = {8 * kMag, 8 * kMag};
   
-  SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, image);
+  SDL_Texture* characterMovementTexture = SDL_CreateTextureFromSurface(renderer, characterMovementImage);
+  SDL_Texture* levelOneTexture =
+      SDL_CreateTextureFromSurface(renderer, areaOneImage);
   //SDL_RenderCopy(renderer, texture, &src, &dest2);
   //SDL_RenderCopyEx(renderer, texture, &src, &dest2, 45.0f, &center, SDL_FLIP_NONE);
   //SDL_RenderPresent(renderer);  
@@ -132,7 +137,7 @@ int main(int argc, char** args) {
   int yDir = 0;
 
   float kFps = 30.0;
-  float kFrameTime = 1000.0 / kFps;
+  float kFrameTime = static_cast<float>(1000.0 / kFps);
   int currentTicks = SDL_GetTicks();
   float kSpeed = 200.0f;
 
@@ -255,13 +260,14 @@ int main(int argc, char** args) {
     SDL_RenderClear(renderer);
 
     SDL_RenderCopy(renderer, gridTex, nullptr, nullptr);
+    SDL_RenderCopy(renderer, levelOneTexture, nullptr, &levelDisplayRect);
 
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 100);
     SDL_RenderFillRect(renderer, &loc);
     
 
-    SDL_RenderCopyEx(renderer, texture, &frame0, &loc, 0.0f, &center,
-                     isFlipped ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+    SDL_RenderCopyEx(renderer, characterMovementTexture, &frame0, &loc, 0.0f,
+                     &center, isFlipped ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
     //SDL_Delay(150);
     
     //loc.x += xDir * kMag * 2;
@@ -294,8 +300,12 @@ int main(int argc, char** args) {
 
   SDL_DestroyTexture(gridTex);
   
-  SDL_DestroyTexture(texture);
-  SDL_FreeSurface(image);
+  SDL_DestroyTexture(characterMovementTexture);
+  SDL_FreeSurface(characterMovementImage);
+
+  SDL_DestroyTexture(levelOneTexture);
+  SDL_FreeSurface(areaOneImage);
+
   SDL_DestroyRenderer(renderer);
 
   SDL_DestroyWindow(window);
