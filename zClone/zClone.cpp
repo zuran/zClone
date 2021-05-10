@@ -12,7 +12,7 @@
 
 using json = nlohmann::json;
 
-int main(int argc, char** args) {
+int main2(int argc, char** args) {
   std::cout << "Hello World!\n";
   json j;
   j["test"] = 3.5;
