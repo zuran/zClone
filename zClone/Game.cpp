@@ -55,5 +55,22 @@ GameController Game::SetupGameController() const {
     }
   };
   controller.RegisterKeyAction(SDL_SCANCODE_E, eAction);
+
+  MovementAction moveAction = [](int dt, Uint8 leftState, Uint8 rightState,
+                                 Uint8 upState, Uint8 downState) {
+    if(downState && !upState) {
+      std::cout << "Down" << std::endl;
+    } else if(!downState && upState) {
+      std::cout << "Up" << std::endl;
+    } else if(leftState && !rightState) {
+      std::cout << "Left" << std::endl;
+    } else if(!leftState && rightState) {
+      std::cout << "Right" << std::endl;
+    } else {
+      std::cout << "None" << std::endl;
+    }
+  };
+  controller.RegisterMovementAction(moveAction);
+
   return controller;
 }

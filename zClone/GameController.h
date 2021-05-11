@@ -30,5 +30,5 @@ class GameController {
  private:
   std::map<SDL_Scancode, KeyInfo> registered_actions_;
   std::vector<SDL_Scancode> registered_keys_;
-  MovementAction* movement_action_;
+  MovementAction movement_action_;
 };
