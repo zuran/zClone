@@ -48,10 +48,18 @@ void Gamora::Draw(Screen& screen) {
 
 void Gamora::Stop() {}
 
+// Gamora's absolute position is a floating point vector, but she can only be
+// displayed using an integer vector represented by the x and y of pos_rect_.
+// pos_rect_'s width and height remain unchanged, and the bounding box is
+// just translated as it's needed for drawing anyway.
+//
+// When Gamora's movement is perpendicular to her previous direction, she's
+// realigned to the 8x8 subgrid.
 void Gamora::MoveBy(float x, float y) { 
   Actor::set_x_pos(Actor::x_pos() + x);
   Actor::set_y_pos(Actor::y_pos() + y);
 
+  // Align Gamora with the tile subgrid (8x8)
   if(y == 0) {
     float gridY = std::roundf(Actor::y_pos() / 8);
     Actor::set_y_pos(gridY * 8);

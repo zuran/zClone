@@ -1,3 +1,10 @@
+// 
+// Screen uses a texture, buffer_, as a back buffer, which is the target of all
+// draw calls. During Present(), which is called during the game loop, the back
+// buffer is copied to the (scaled) window surface. Clear() is only called on
+// the back buffer.
+//
+
 #include "Screen.h"
 
 Screen::Screen() : window_(nullptr), renderer_(nullptr), buffer_(nullptr) {}
@@ -54,6 +61,9 @@ void Screen::Clear() {
   SDL_RenderClear(renderer_); 
 }
 
+// spriteSheet: texture atlas
+// spriteRect: bounds for the sprite to draw from the texture atlas
+// targetRect: bounds for the draw target location on the back buffer
 void Screen::Draw(SDL_Texture* spriteSheet, const SDL_Rect& spriteRect,
                   SDL_Rect& targetRect) {
   SDL_RenderCopy(renderer_, spriteSheet, &spriteRect, &targetRect);

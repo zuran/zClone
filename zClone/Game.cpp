@@ -64,15 +64,15 @@ GameController Game::SetupGameController(Gamora& gamora) const {
     }
   };
   controller.RegisterKeyAction(SDL_SCANCODE_E, eAction);
-  MovementAction moveAction = [&gamora](int dt, Uint8 leftState, Uint8 rightState,
-                                 Uint8 upState, Uint8 downState) {
-    if(downState && !upState) {
+  MovementAction moveAction = [&gamora](int dt, Uint8 left, Uint8 right,
+                                 Uint8 up, Uint8 down) {
+    if(down && !up) {
       gamora.set_direction(MovementDirection::kDown);
-    } else if(!downState && upState) {
+    } else if(!down && up) {
       gamora.set_direction(MovementDirection::kUp);
-    } else if(leftState && !rightState) {
+    } else if(left && !right) {
       gamora.set_direction(MovementDirection::kLeft);
-    } else if(!leftState && rightState) {
+    } else if(!left && right) {
       gamora.set_direction(MovementDirection::kRight);
     } else {
       gamora.set_direction(MovementDirection::kNone);

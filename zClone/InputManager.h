@@ -2,8 +2,6 @@
 
 #include <functional>
 
-using QuitAction = std::function<void>();
-
 class GameController;
 
 class InputManager {
