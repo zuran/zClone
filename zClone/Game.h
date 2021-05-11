@@ -3,6 +3,7 @@
 #include <SDL.h>
 #include "Screen.h"
 #include "InputManager.h"
+class Gamora;
 
 class Game {
  public:
@@ -11,7 +12,8 @@ class Game {
   void Run();
 
  private:
-  GameController SetupGameController() const;
+  GameController SetupGameController(Gamora& gamora) const;
+  void SetupGamora(Gamora& gamora);
 
   SDL_Window* window_;
   Screen screen_;

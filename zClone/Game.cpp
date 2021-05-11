@@ -1,6 +1,8 @@
 #include "Game.h"
 #include "GameController.h"
+#include "Gamora.h"
 #include <iostream>
+#include <SDL_image.h>
 
 static const int kWidth = 256;
 static const int kHeight = 240;
@@ -28,10 +30,13 @@ bool Game::Init(int width, int height, int magnification) {
 
 void Game::Run() { 
   bool isRunning = true;  
-  float dt = 0.0f;
+  int dt = 0;
 
+  Gamora gamora;
+  SetupGamora(gamora);
+
+  GameController controller = SetupGameController(gamora);
   input_manager_.Init([&isRunning]() { isRunning = false; });
-  GameController controller = SetupGameController();
   input_manager_.set_current_controller(&controller);
 
   while(isRunning) {
@@ -39,15 +44,18 @@ void Game::Run() {
     
     input_manager_.Update(dt);
 
+    gamora.Draw(screen_);
+
+    screen_.Present();
     SDL_Delay(10);
     int frameEnd = SDL_GetTicks();
-    int totalFrameTime = frameBegin - frameEnd;
-    dt = totalFrameTime / 1000.0f;
+    int totalFrameTime = frameEnd - frameBegin;
+    dt = totalFrameTime;
     screen_.Clear();
   }
 }
 
-GameController Game::SetupGameController() const { 
+GameController Game::SetupGameController(Gamora& gamora) const { 
   GameController controller = GameController();
   KeyAction eAction = [](int dt, Uint8 state, Uint8 previousState) {
     if (state == SDL_PRESSED && previousState == SDL_RELEASED) {
@@ -55,22 +63,37 @@ GameController Game::SetupGameController() const {
     }
   };
   controller.RegisterKeyAction(SDL_SCANCODE_E, eAction);
-
-  MovementAction moveAction = [](int dt, Uint8 leftState, Uint8 rightState,
+  float speed = 100.0f;
+  MovementAction moveAction = [&gamora, speed](int dt, Uint8 leftState, Uint8 rightState,
                                  Uint8 upState, Uint8 downState) {
+    float amount = dt / 1000.0f * speed;
     if(downState && !upState) {
       std::cout << "Down" << std::endl;
+      gamora.MoveBy(0, amount);
     } else if(!downState && upState) {
       std::cout << "Up" << std::endl;
+      gamora.MoveBy(0, -amount);
     } else if(leftState && !rightState) {
       std::cout << "Left" << std::endl;
+      gamora.MoveBy(-amount, 0);
     } else if(!leftState && rightState) {
       std::cout << "Right" << std::endl;
+      gamora.MoveBy(amount, 0);
     } else {
-      std::cout << "None" << std::endl;
+      //std::cout << "None" << std::endl;
     }
   };
   controller.RegisterMovementAction(moveAction);
 
   return controller;
+}
+
+void Game::SetupGamora(Gamora& gamora) {
+  std::string gamoraSpriteSheetPath =
+      static_cast<std::string>(SDL_GetBasePath()) + "../Assets/turtle_walk.png";
+  SDL_Surface* gamoraMovementImage = IMG_Load(gamoraSpriteSheetPath.c_str());
+  gamora.Init(screen_, gamoraMovementImage);
+  gamora.MoveBy(kWidth / 2.0f, kHeight / 2.0f);
+
+  SDL_FreeSurface(gamoraMovementImage);
 }

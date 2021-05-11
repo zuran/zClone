@@ -25,7 +25,14 @@ class Actor {
     direction_ = direction;
   }
 
+  inline float x_pos() const { return x_pos_; }
+  inline float y_pos() const { return y_pos_; }
+  inline void set_x_pos(float xPos) { x_pos_ = xPos; }
+  inline void set_y_pos(float yPos) { y_pos_ = yPos; }
+
  private:
   MovementDirection direction_;
   AnimatedSprite sprite_;
+  float x_pos_;
+  float y_pos_;
 };

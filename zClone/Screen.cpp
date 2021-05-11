@@ -44,10 +44,29 @@ SDL_Window* Screen::Init(int width, int height, int magnification) {
 
 void Screen::Present() { 
   SDL_SetRenderTarget(renderer_, nullptr);
+  SDL_RenderCopy(renderer_, buffer_, nullptr, nullptr);
   SDL_RenderPresent(renderer_);
   SDL_SetRenderTarget(renderer_, buffer_);
 }
 
-void Screen::Clear() { SDL_RenderClear(renderer_); }
+void Screen::Clear() {
+  SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
+  SDL_RenderClear(renderer_); 
+}
+
+void Screen::Draw(SDL_Texture* spriteSheet, const SDL_Rect& spriteRect,
+                  SDL_Rect& targetRect) {
+  SDL_RenderCopy(renderer_, spriteSheet, &spriteRect, &targetRect);
+}
+
+void Screen::Draw(SDL_Texture* spriteSheet, const SDL_Rect& spriteRect,
+                  SDL_Rect& targetRect, float rotation, SDL_Point& center,
+                  SDL_RendererFlip flip) {}
+
+SDL_Texture* Screen::CreateTextureFromSurface(SDL_Surface* surface) {
+  SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer_, surface);
+  if (texture) return texture;
+  return texture;
+}
 
 Screen& Screen::operator=(const Screen& screen) { return *this; }

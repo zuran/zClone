@@ -12,6 +12,13 @@ class Screen {
   void Present();
   void Clear();
 
+  void Draw(SDL_Texture* spriteSheet, const SDL_Rect& spriteRect,
+            SDL_Rect& targetRect);
+  void Draw(SDL_Texture* spriteSheet, const SDL_Rect& spriteRect,
+            SDL_Rect& targetRect, float rotation, SDL_Point& center,
+            SDL_RendererFlip flip);
+  SDL_Texture* CreateTextureFromSurface(SDL_Surface* surface);
+
  private:
   Screen(const Screen& screen);
   Screen& operator=(const Screen& screen);
