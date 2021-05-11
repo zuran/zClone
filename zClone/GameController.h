@@ -20,7 +20,7 @@ class GameController {
   void RegisterMovementAction(MovementAction& movementAction);
   void ProcessMovement(int dt, Uint8 leftState, Uint8 rightState, Uint8 upState,
                        Uint8 downState) const;
-  inline KeyInfo GetKeyInfo(SDL_Scancode keyCode) {
+  inline KeyInfo& GetKeyInfo(SDL_Scancode keyCode) {
     return registered_actions_[keyCode];
   }
   inline std::vector<SDL_Scancode> registered_keys() const {

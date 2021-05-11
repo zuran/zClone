@@ -11,6 +11,8 @@ class Game {
   void Run();
 
  private:
+  GameController SetupGameController() const;
+
   SDL_Window* window_;
   Screen screen_;
 

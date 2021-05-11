@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "GameController.h"
 #include <iostream>
 
 static const int kWidth = 256;
@@ -30,6 +31,8 @@ void Game::Run() {
   float dt = 0.0f;
 
   input_manager_.Init([&isRunning]() { isRunning = false; });
+  GameController controller = SetupGameController();
+  input_manager_.set_current_controller(&controller);
 
   while(isRunning) {
     int frameBegin = SDL_GetTicks();
@@ -42,4 +45,15 @@ void Game::Run() {
     dt = totalFrameTime / 1000.0f;
     screen_.Clear();
   }
+}
+
+GameController Game::SetupGameController() const { 
+  GameController controller = GameController();
+  KeyAction eAction = [](int dt, Uint8 state, Uint8 previousState) {
+    if (state == SDL_PRESSED && previousState == SDL_RELEASED) {
+      std::cout << "E" << std::endl;
+    }
+  };
+  controller.RegisterKeyAction(SDL_SCANCODE_E, eAction);
+  return controller;
 }

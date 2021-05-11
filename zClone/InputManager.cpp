@@ -18,8 +18,9 @@ void InputManager::Update(int dt) {
   // Process registered keys then movement
   const Uint8* keyboardState = SDL_GetKeyboardState(nullptr);
   for(const SDL_Scancode key : current_controller_->registered_keys()) {
-    const KeyInfo keyInfo = current_controller_->GetKeyInfo(key);
+    KeyInfo& keyInfo = current_controller_->GetKeyInfo(key);
     keyInfo.action(dt, keyboardState[key], keyInfo.state);
+    keyInfo.state = keyboardState[key];
   }
   current_controller_->ProcessMovement(
       dt, keyboardState[SDL_SCANCODE_LEFT], keyboardState[SDL_SCANCODE_RIGHT],
