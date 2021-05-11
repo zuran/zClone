@@ -17,7 +17,30 @@ void Gamora::Init(Screen& screen, SDL_Surface* spriteSheetSurface) {
   frame_rect_ = {0, 0, 16, 16};
 }
 
-void Gamora::Update(int dt) {}
+void Gamora::Update(int dt) {
+  float moveAmount = dt / 1000.0f * speed_;
+
+  switch(direction()) { 
+  case MovementDirection::kDown:
+      frame_rect_.y = 16;
+    MoveBy(0, moveAmount);
+    break;
+  case MovementDirection::kUp:
+    frame_rect_.y = 0;
+    MoveBy(0, -moveAmount);
+    break;
+  case MovementDirection::kLeft:
+    frame_rect_.y = 32;
+    MoveBy(-moveAmount, 0);
+    break;
+  case MovementDirection::kRight:
+    frame_rect_.y = 32;
+    MoveBy(moveAmount, 0);
+    break;
+  case MovementDirection::kNone:
+    break;
+  }
+}
 
 void Gamora::Draw(Screen& screen) {
   screen.Draw(sprite_sheet_, frame_rect_, pos_rect_);

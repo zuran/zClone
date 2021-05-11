@@ -44,6 +44,7 @@ void Game::Run() {
     
     input_manager_.Update(dt);
 
+    gamora.Update(dt);
     gamora.Draw(screen_);
 
     screen_.Present();
@@ -63,24 +64,18 @@ GameController Game::SetupGameController(Gamora& gamora) const {
     }
   };
   controller.RegisterKeyAction(SDL_SCANCODE_E, eAction);
-  float speed = 100.0f;
-  MovementAction moveAction = [&gamora, speed](int dt, Uint8 leftState, Uint8 rightState,
+  MovementAction moveAction = [&gamora](int dt, Uint8 leftState, Uint8 rightState,
                                  Uint8 upState, Uint8 downState) {
-    float amount = dt / 1000.0f * speed;
     if(downState && !upState) {
-      std::cout << "Down" << std::endl;
-      gamora.MoveBy(0, amount);
+      gamora.set_direction(MovementDirection::kDown);
     } else if(!downState && upState) {
-      std::cout << "Up" << std::endl;
-      gamora.MoveBy(0, -amount);
+      gamora.set_direction(MovementDirection::kUp);
     } else if(leftState && !rightState) {
-      std::cout << "Left" << std::endl;
-      gamora.MoveBy(-amount, 0);
+      gamora.set_direction(MovementDirection::kLeft);
     } else if(!leftState && rightState) {
-      std::cout << "Right" << std::endl;
-      gamora.MoveBy(amount, 0);
+      gamora.set_direction(MovementDirection::kRight);
     } else {
-      //std::cout << "None" << std::endl;
+      gamora.set_direction(MovementDirection::kNone);
     }
   };
   controller.RegisterMovementAction(moveAction);

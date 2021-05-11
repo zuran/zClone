@@ -7,6 +7,8 @@ class Screen;
 
 class Gamora : public Actor {
  public:
+  const static SDL_Rect kLeftFrame;
+
   Gamora();
   ~Gamora();
   void Init(Screen& screen, SDL_Surface* spriteSheetSurface);
@@ -19,4 +21,6 @@ class Gamora : public Actor {
   SDL_Texture* sprite_sheet_;
   SDL_Rect frame_rect_;
   SDL_Rect pos_rect_;
+
+  float speed_ = 100.0f;
 };
