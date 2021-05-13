@@ -21,24 +21,24 @@ void Gamora::Init(Screen& screen, SDL_Surface* spriteSheetSurface) {
   int frameTime = 250;
 
   std::vector<Frame> upFrames;
-  upFrames.push_back({frameTime, 0, 0, false});
-  upFrames.push_back({frameTime, 16, 0, false});
+  upFrames.push_back({frameTime, 0, 0, SDL_FLIP_NONE});
+  upFrames.push_back({frameTime, 16, 0, SDL_FLIP_NONE});
   sprite_.AddAnimation("up", upFrames);
 
   std::vector<Frame> downFrames;
-  downFrames.push_back({frameTime, 0, 16, false});
-  downFrames.push_back({frameTime, 16, 16, false});
+  downFrames.push_back({frameTime, 0, 16, SDL_FLIP_NONE});
+  downFrames.push_back({frameTime, 16, 16, SDL_FLIP_NONE});
   sprite_.AddAnimation("down", downFrames);
 
   frameTime = 125;
   std::vector<Frame> rightFrames;
-  rightFrames.push_back({frameTime, 0, 32, false});
-  rightFrames.push_back({frameTime, 16, 32, false});
+  rightFrames.push_back({frameTime, 0, 32, SDL_FLIP_NONE});
+  rightFrames.push_back({frameTime, 16, 32, SDL_FLIP_NONE});
   sprite_.AddAnimation("right", rightFrames);
 
   std::vector<Frame> leftFrames;
-  leftFrames.push_back({frameTime, 0, 32, true});
-  leftFrames.push_back({frameTime, 16, 32, true});
+  leftFrames.push_back({frameTime, 0, 32, SDL_FLIP_HORIZONTAL});
+  leftFrames.push_back({frameTime, 16, 32, SDL_FLIP_HORIZONTAL});
   sprite_.AddAnimation("left", leftFrames);
   sprite_.SetCurrentAnimation("down");
 }

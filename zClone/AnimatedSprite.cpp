@@ -6,12 +6,14 @@ AnimatedSprite::AnimatedSprite(int width, int height) {
   current_frame_ = 0;
   current_frame_time_ = 0;
   frame_rect_ = {0, 0, width, height};
+  frame_center_ = {width / 2, height / 2};
 }
 
 void AnimatedSprite::Update(int dt) {
   if(is_playing_) {
     current_frame_time_ += dt;
-    if(current_frame_time_ > animations_[current_animation_][current_frame_].frame_time) {
+    if (current_frame_time_ >
+        animations_[current_animation_][current_frame_].frame_time) {
       current_frame_time_ = 0;
       current_frame_ =
           (current_frame_ + 1) % animations_[current_animation_].size();
@@ -23,7 +25,8 @@ void AnimatedSprite::Update(int dt) {
 
 void AnimatedSprite::Draw(Screen& screen, SDL_Texture* sprite_sheet,
                           SDL_Rect pos_rect) {
-  screen.Draw(sprite_sheet, frame_rect_, pos_rect);
+  screen.Draw(sprite_sheet, frame_rect_, pos_rect, 0.0f, frame_center_,
+              animations_[current_animation_][current_frame_].flip);
 }
 
 void AnimatedSprite::Stop() { is_playing_ = false; }

@@ -71,7 +71,10 @@ void Screen::Draw(SDL_Texture* spriteSheet, const SDL_Rect& spriteRect,
 
 void Screen::Draw(SDL_Texture* spriteSheet, const SDL_Rect& spriteRect,
                   SDL_Rect& targetRect, float rotation, SDL_Point& center,
-                  SDL_RendererFlip flip) {}
+                  SDL_RendererFlip flip) {
+  SDL_RenderCopyEx(renderer_, spriteSheet, &spriteRect, &targetRect, rotation,
+                   &center, flip);
+}
 
 SDL_Texture* Screen::CreateTextureFromSurface(SDL_Surface* surface) {
   SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer_, surface);

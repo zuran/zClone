@@ -11,7 +11,7 @@ struct Frame {
   int frame_time;
   int x_offset;
   int y_offset;
-  bool is_flipped;
+  SDL_RendererFlip flip;
 };
 
 class AnimatedSprite {
@@ -34,5 +34,6 @@ class AnimatedSprite {
   std::string current_animation_;
   int current_frame_;
   SDL_Rect frame_rect_;
+  SDL_Point frame_center_;
   bool is_playing_;
 };
