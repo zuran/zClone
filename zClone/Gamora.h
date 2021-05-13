@@ -19,8 +19,9 @@ class Gamora : public Actor {
 
  private:
   SDL_Texture* sprite_sheet_;
-  SDL_Rect frame_rect_;
   SDL_Rect pos_rect_;
+
+  AnimatedSprite sprite_;
 
   float speed_ = 100.0f;
 };

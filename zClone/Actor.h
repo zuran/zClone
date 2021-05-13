@@ -32,7 +32,7 @@ class Actor {
 
  private:
   MovementDirection direction_;
-  AnimatedSprite sprite_;
+  
   float x_pos_;
   float y_pos_;
 };
