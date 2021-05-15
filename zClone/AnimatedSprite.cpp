@@ -10,16 +10,16 @@ AnimatedSprite::AnimatedSprite(int width, int height) {
 }
 
 void AnimatedSprite::Update(int dt) {
-  if(is_playing_) {
-    current_frame_time_ += dt;
-    if (current_frame_time_ >
-        animations_[current_animation_][current_frame_].frame_time) {
-      current_frame_time_ = 0;
-      current_frame_ =
-          (current_frame_ + 1) % animations_[current_animation_].size();
-      frame_rect_.x = animations_[current_animation_][current_frame_].x_offset;
-      frame_rect_.y = animations_[current_animation_][current_frame_].y_offset;
-    }
+  if (!is_playing_) return;
+
+  current_frame_time_ += dt;
+  if (current_frame_time_ >
+      animations_[current_animation_][current_frame_].frame_time) {
+    current_frame_time_ = 0;
+    current_frame_ =
+        (current_frame_ + 1) % animations_[current_animation_].size();
+    frame_rect_.x = animations_[current_animation_][current_frame_].x_offset;
+    frame_rect_.y = animations_[current_animation_][current_frame_].y_offset;
   }
 }
 

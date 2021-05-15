@@ -1,7 +1,5 @@
 #pragma once
 
-#include "AnimatedSprite.h"
-
 class Screen;
 class CollisionRect;
 

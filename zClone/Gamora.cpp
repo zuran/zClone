@@ -4,7 +4,7 @@
 #include <cmath>
 #include <vector>
 
-Gamora::Gamora() : sprite_sheet_(nullptr), pos_rect_({0,0,0,0}), sprite_({16,16}) {}
+Gamora::Gamora() : sprite_sheet_(nullptr), pos_rect_({0,0,16,16}), sprite_({16,16}) {}
 
 Gamora::~Gamora() {
   if(sprite_sheet_) {
@@ -15,11 +15,9 @@ Gamora::~Gamora() {
 
 void Gamora::Init(Screen& screen, SDL_Surface* spriteSheetSurface) {
   sprite_sheet_ = screen.CreateTextureFromSurface(spriteSheetSurface);
-  pos_rect_ = {0, 0, 16, 16};
-
-  // Set up animation
+  
+  // Set up animations
   int frameTime = 250;
-
   std::vector<Frame> upFrames;
   upFrames.push_back({frameTime, 0, 0, SDL_FLIP_NONE});
   upFrames.push_back({frameTime, 16, 0, SDL_FLIP_NONE});

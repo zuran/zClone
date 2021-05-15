@@ -78,7 +78,6 @@ void Screen::Draw(SDL_Texture* spriteSheet, const SDL_Rect& spriteRect,
 
 SDL_Texture* Screen::CreateTextureFromSurface(SDL_Surface* surface) {
   SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer_, surface);
-  if (texture) return texture;
   return texture;
 }
 

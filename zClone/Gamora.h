@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Actor.h"
+#include "AnimatedSprite.h"
 #include <SDL.h>
 
 class Screen;
