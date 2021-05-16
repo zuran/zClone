@@ -1,5 +1,8 @@
 #include "Overworld.h"
 #include <SDL.h>
+#include "json.hpp"
+
+using json = nlohmann::json;
 
 Overworld::Overworld() : full_map_(nullptr), tiles_(nullptr) {}
 
@@ -16,6 +19,9 @@ Overworld::~Overworld() {
 }
 
 void Overworld::Init(Screen& screen, SDL_Surface* spriteSheetSurface) {
+  json j;
+  j["test"] = 3.5;
+  
   // Create tiles_ texture from spriteSheetSurface
   // Read overworld json data into a variable
   // Using width, height, and data
