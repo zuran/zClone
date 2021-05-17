@@ -33,15 +33,15 @@ void Game::Run() {
   bool isRunning = true;  
   int dt = 0;
 
+  Overworld overworld;
+  overworld.Init(screen_);
+
   Gamora gamora;
-  SetupGamora(gamora);
+  SetupGamora(gamora, overworld);
 
   GameController controller = SetupGameController(gamora);
   input_manager_.Init([&isRunning]() { isRunning = false; });
   input_manager_.set_current_controller(&controller);
-
-  Overworld overworld;
-  overworld.Init(screen_);
 
   while(isRunning) {
     int frameBegin = SDL_GetTicks();
@@ -89,11 +89,11 @@ GameController Game::SetupGameController(Gamora& gamora) const {
   return controller;
 }
 
-void Game::SetupGamora(Gamora& gamora) {
+void Game::SetupGamora(Gamora& gamora, Overworld& overworld) {
   std::string gamoraSpriteSheetPath =
       static_cast<std::string>(SDL_GetBasePath()) + "../Assets/turtle_walk.png";
   SDL_Surface* gamoraMovementImage = IMG_Load(gamoraSpriteSheetPath.c_str());
-  gamora.Init(screen_, gamoraMovementImage);
+  gamora.Init(screen_, gamoraMovementImage, overworld);
   gamora.MoveBy(kWidth / 2.0f, kHeight / 2.0f);
 
   SDL_FreeSurface(gamoraMovementImage);

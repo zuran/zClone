@@ -2,6 +2,7 @@
 
 #include "Actor.h"
 #include "AnimatedSprite.h"
+#include "Overworld.h"
 #include <SDL.h>
 
 class Screen;
@@ -12,7 +13,7 @@ class Gamora : public Actor {
 
   Gamora();
   ~Gamora();
-  void Init(Screen& screen, SDL_Surface* spriteSheetSurface);
+  void Init(Screen& screen, SDL_Surface* spriteSheetSurface, Overworld& overworld);
   virtual void Update(int dt) override;
   virtual void Draw(Screen& screen) override;
   virtual void Stop() override;
@@ -25,4 +26,5 @@ class Gamora : public Actor {
   AnimatedSprite sprite_;
 
   float speed_ = 100.0f;
+  Overworld* overworld_;
 };

@@ -4,7 +4,7 @@
 #include <cmath>
 #include <vector>
 
-Gamora::Gamora() : sprite_sheet_(nullptr), pos_rect_({0,0,16,16}), sprite_({16,16}) {}
+Gamora::Gamora() : sprite_sheet_(nullptr), pos_rect_({0,0,16,16}), sprite_({16,16}), overworld_(nullptr) {}
 
 Gamora::~Gamora() {
   if(sprite_sheet_) {
@@ -13,7 +13,8 @@ Gamora::~Gamora() {
   }
 }
 
-void Gamora::Init(Screen& screen, SDL_Surface* spriteSheetSurface) {
+void Gamora::Init(Screen& screen, SDL_Surface* spriteSheetSurface, Overworld& overworld) {
+  overworld_ = &overworld;
   sprite_sheet_ = screen.CreateTextureFromSurface(spriteSheetSurface);
   
   // Set up animations
@@ -98,4 +99,9 @@ void Gamora::MoveBy(float x, float y) {
 
   pos_rect_.x = static_cast<int>(Actor::x_pos());
   pos_rect_.y = static_cast<int>(Actor::y_pos());
+  int tempX = pos_rect_.x;
+  int tempY = pos_rect_.y;
+  overworld_->SetSafeLocationIfColliding(pos_rect_, direction());
+  if (pos_rect_.x != tempX) Actor::set_x_pos(pos_rect_.x);
+  if (pos_rect_.y != tempY) Actor::set_y_pos(pos_rect_.y);
 }

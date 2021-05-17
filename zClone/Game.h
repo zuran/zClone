@@ -4,6 +4,7 @@
 #include "Screen.h"
 #include "InputManager.h"
 class Gamora;
+class Overworld;
 
 class Game {
  public:
@@ -13,7 +14,7 @@ class Game {
 
  private:
   GameController SetupGameController(Gamora& gamora) const;
-  void SetupGamora(Gamora& gamora);
+  void SetupGamora(Gamora& gamora, Overworld& overworld);
 
   SDL_Window* window_;
   Screen screen_;

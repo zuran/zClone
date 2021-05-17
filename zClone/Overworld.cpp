@@ -46,7 +46,7 @@ void Overworld::Init(Screen& screen) {
   SDL_FreeSurface(overworldSpritesImage);
 
   // Using width, height, and data
-  std::vector<int> data = j["layers"][0]["data"].get<std::vector<int>>();
+  area_data_ = j["layers"][0]["data"].get<std::vector<int>>();
   int dataWidth = j["layers"][0]["width"].get<int>();
   int dataHeight = j["layers"][0]["height"].get<int>();
 
@@ -55,11 +55,30 @@ void Overworld::Init(Screen& screen) {
 
   // Loop through data array and render tiles to the full_map_ texture
   int tilesetColumns = j["tilesets"][0]["columns"].get<int>();
-  screen.DrawOverworldTiles(tiles_, full_map_, data, tilesetColumns, dataWidth,
+  screen.DrawOverworldTiles(tiles_, full_map_, area_data_, tilesetColumns, dataWidth,
                             dataHeight);
 
   // Load warp points/doors
   // Load tile collision info
+  int numTiles = j["tilesets"][0]["tiles"].size();
+  for(int i = 0; i < numTiles; ++i) {
+    int numCollisions = j["tilesets"][0]["tiles"][i]["objectgroup"]["objects"].size();
+    int tileId = j["tilesets"][0]["tiles"][i]["id"].get<int>();
+    std::vector<SDL_Rect> collisionRects;
+    for(int o = 0; o < numCollisions; ++o) {
+      SDL_Rect collisionRect;
+      collisionRect.x = j["tilesets"][0]["tiles"][i]["objectgroup"]["objects"][o]["x"].get<int>();
+      collisionRect.y = j["tilesets"][0]["tiles"][i]["objectgroup"]["objects"][o]["y"].get<int>();
+      collisionRect.w =
+          j["tilesets"][0]["tiles"][i]["objectgroup"]["objects"][o]["width"]
+              .get<int>();
+      collisionRect.h =
+          j["tilesets"][0]["tiles"][i]["objectgroup"]["objects"][o]["height"]
+              .get<int>();
+      collisionRects.push_back(collisionRect);
+    }
+    tile_collisions_[tileId] = collisionRects;
+  }
 
   // Construct a vector of area data for discovering collisions, spawn points,
   //  and other points of interest
@@ -69,4 +88,103 @@ void Overworld::Update(int dt) {}
 
 void Overworld::Draw(Screen& screen) {
   screen.Draw(full_map_, area_rect_, area_draw_rect_);
+}
+
+void Overworld::SetSafeLocationIfColliding(SDL_Rect& gamoraPosRect, MovementDirection direction) {
+  if (direction == MovementDirection::kNone) return;
+  // Get overlapping tiles
+  int x = gamoraPosRect.x;
+  int y = gamoraPosRect.y + 8 - 64;
+
+  int tileCols = 16;
+
+  std::vector<int> overlappingTileIds;
+  std::vector<SDL_Point> overlappingTileLocs;
+
+  // tile map is 16x11
+  int tileX = x / 16;
+  int tileXOffest = x % 16;
+  int tileY = y / 16;
+  int tileYOffset = y % 16;
+
+  // Always overlapping at least one tile
+  overlappingTileLocs.push_back({tileX, tileY});
+  overlappingTileIds.push_back(tileCols * tileY + tileX);
+  if(tileXOffest > 0) {
+    overlappingTileLocs.push_back({tileX + 1, tileY});
+    overlappingTileIds.push_back(tileCols * tileY + tileX + 1);
+  }
+  if(tileYOffset > 8) {
+    overlappingTileLocs.push_back({tileX, tileY+1});
+    overlappingTileIds.push_back(tileCols * (tileY+1) + tileX);
+  }
+  if(tileXOffest > 0 && tileYOffset > 8) {
+    overlappingTileLocs.push_back({tileX + 1, tileY + 1});
+    overlappingTileIds.push_back(tileCols * (tileY + 1) + tileX + 1); 
+  }
+
+  // Check collisions
+  for(size_t i = 0; i < overlappingTileIds.size(); ++i) {
+    int tileId = area_data_[overlappingTileIds[i]] - 1;
+    auto it = tile_collisions_.find(tileId);
+    if (it == tile_collisions_.end()) continue;
+
+    std::vector<SDL_Rect> collisionRects = it->second;
+    SDL_Point tileLoc = overlappingTileLocs[i];
+    for(size_t j = 0; j < collisionRects.size(); j++) {
+      SDL_Rect collisionRect = collisionRects[j];
+      collisionRect.x += tileLoc.x * 16;
+      collisionRect.y += tileLoc.y * 16;
+
+      switch(direction){ 
+        case MovementDirection::kLeft: {
+          bool isLeftInside =
+              x < (collisionRect.x + collisionRect.w) && x > collisionRect.x;
+          bool isTopInside =
+              y < (collisionRect.y + collisionRect.h) && y >= collisionRect.y;
+          bool isBottomInside =
+              (y + 8) <= (collisionRect.y + collisionRect.h) &&
+              (y + 8) > collisionRect.y;
+          if (isLeftInside && (isTopInside || isBottomInside)) {
+            gamoraPosRect.x = collisionRect.x + collisionRect.w;
+            return;
+          }
+          break;
+        }
+        case MovementDirection::kRight: {
+          bool isRightInside = (x + 16) > collisionRect.x && (x + 16) < (collisionRect.x + collisionRect.w);
+          bool isTopInside =
+              y < (collisionRect.y + collisionRect.h) && y >= collisionRect.y;
+          bool isBottomInside =
+              (y + 8) <= (collisionRect.y + collisionRect.h) &&
+              (y + 8) > collisionRect.y;
+          if (isRightInside && (isTopInside || isBottomInside)) {
+            gamoraPosRect.x = collisionRect.x - 16;
+            return;
+          }
+          break;
+        }
+        case MovementDirection::kUp: {
+          bool isTopInside =
+              y < (collisionRect.y + collisionRect.h) && y > collisionRect.y;
+          bool isLeftInside =
+              y < (collisionRect.y + collisionRect.h) && y >= collisionRect.y;
+          bool isRightInside =
+              (y + 8) <= (collisionRect.y + collisionRect.h) &&
+              (y + 8) > collisionRect.y;
+          if (isTopInside && (isLeftInside || isRightInside)) {
+            gamoraPosRect.x = collisionRect.x + collisionRect.w;
+            return;
+          }
+          break;
+      }
+      // Check lateral
+      if(direction == MovementDirection::kLeft) {
+        // check right side of rectangle
+        
+      }
+
+      // Check vertical
+    }
+  }
 }

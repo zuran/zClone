@@ -95,7 +95,6 @@ void Screen::DrawOverworldTiles(SDL_Texture* tileset, SDL_Texture* map,
       Draw(tileset, tileRect, drawRect);
     }
   }
-
   SDL_SetRenderTarget(renderer_, buffer_);
 }
 
