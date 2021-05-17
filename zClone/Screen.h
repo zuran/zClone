@@ -1,7 +1,8 @@
 #pragma once
 
-#include <SDL.h>
 #include "Color.h"
+#include <SDL.h>
+#include <vector>
 
 class Screen {
  public:
@@ -17,7 +18,12 @@ class Screen {
   void Draw(SDL_Texture* spriteSheet, const SDL_Rect& spriteRect,
             SDL_Rect& targetRect, float rotation, SDL_Point& center,
             SDL_RendererFlip flip);
+  void DrawOverworldTiles(SDL_Texture* tileset, SDL_Texture* map,
+                          std::vector<int> data, int tilesetColumns,
+                          int dataWidth, int dataHeight);
+
   SDL_Texture* CreateTextureFromSurface(SDL_Surface* surface);
+  SDL_Texture* CreateTexture(int width, int height);
 
  private:
   Screen(const Screen& screen);

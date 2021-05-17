@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "GameController.h"
 #include "Gamora.h"
+#include "Overworld.h"
 #include <iostream>
 #include <SDL_image.h>
 
@@ -39,12 +40,17 @@ void Game::Run() {
   input_manager_.Init([&isRunning]() { isRunning = false; });
   input_manager_.set_current_controller(&controller);
 
+  Overworld overworld;
+  overworld.Init(screen_);
+
   while(isRunning) {
     int frameBegin = SDL_GetTicks();
     
     input_manager_.Update(dt);
 
     gamora.Update(dt);
+
+    overworld.Draw(screen_);
     gamora.Draw(screen_);
 
     screen_.Present();

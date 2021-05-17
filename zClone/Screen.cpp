@@ -76,8 +76,37 @@ void Screen::Draw(SDL_Texture* spriteSheet, const SDL_Rect& spriteRect,
                    &center, flip);
 }
 
+// Draw overworld tiles to the full map texture
+void Screen::DrawOverworldTiles(SDL_Texture* tileset, SDL_Texture* map,
+                                std::vector<int> data, int tilesetColumns,
+                                int dataWidth, int dataHeight) {
+  SDL_SetRenderTarget(renderer_, map);
+  SDL_Rect tileRect = {0, 0, 16, 16};
+  SDL_Rect drawRect = {0, 0, 16, 16};
+  int dataIndex = 0;
+  for (int row = 0; row < dataHeight; ++row) {
+    drawRect.x = 0;
+    drawRect.y = row * 16;
+    for(int col = 0; col < dataWidth; ++col, ++dataIndex) {
+      if (data[dataIndex] == 0) continue;
+      drawRect.x = col * 16;
+      tileRect.x = (data[dataIndex] - 1) % tilesetColumns * 16;
+      tileRect.y = (data[dataIndex] - 1) / tilesetColumns * 16;
+      Draw(tileset, tileRect, drawRect);
+    }
+  }
+
+  SDL_SetRenderTarget(renderer_, buffer_);
+}
+
 SDL_Texture* Screen::CreateTextureFromSurface(SDL_Surface* surface) {
   SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer_, surface);
+  return texture;
+}
+
+SDL_Texture* Screen::CreateTexture(int width, int height) { 
+  SDL_Texture* texture = SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGBA8888,
+                              SDL_TEXTUREACCESS_TARGET, width, height);
   return texture;
 }
 
