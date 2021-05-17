@@ -136,7 +136,7 @@ void Overworld::SetSafeLocationIfColliding(SDL_Rect& gamoraPosRect, MovementDire
       collisionRect.x += tileLoc.x * 16;
       collisionRect.y += tileLoc.y * 16;
 
-      switch(direction){ 
+      switch (direction) {
         case MovementDirection::kLeft: {
           bool isLeftInside =
               x < (collisionRect.x + collisionRect.w) && x > collisionRect.x;
@@ -152,7 +152,8 @@ void Overworld::SetSafeLocationIfColliding(SDL_Rect& gamoraPosRect, MovementDire
           break;
         }
         case MovementDirection::kRight: {
-          bool isRightInside = (x + 16) > collisionRect.x && (x + 16) < (collisionRect.x + collisionRect.w);
+          bool isRightInside = (x + 16) > collisionRect.x &&
+                               (x + 16) < (collisionRect.x + collisionRect.w);
           bool isTopInside =
               y < (collisionRect.y + collisionRect.h) && y >= collisionRect.y;
           bool isBottomInside =
@@ -168,23 +169,31 @@ void Overworld::SetSafeLocationIfColliding(SDL_Rect& gamoraPosRect, MovementDire
           bool isTopInside =
               y < (collisionRect.y + collisionRect.h) && y > collisionRect.y;
           bool isLeftInside =
-              y < (collisionRect.y + collisionRect.h) && y >= collisionRect.y;
+              x < (collisionRect.x + collisionRect.w) && x >= collisionRect.x;
           bool isRightInside =
-              (y + 8) <= (collisionRect.y + collisionRect.h) &&
-              (y + 8) > collisionRect.y;
+              (x + 16) <= (collisionRect.x + collisionRect.w) &&
+              (x + 16) > collisionRect.x;
           if (isTopInside && (isLeftInside || isRightInside)) {
-            gamoraPosRect.x = collisionRect.x + collisionRect.w;
+            gamoraPosRect.y = collisionRect.y + collisionRect.h + 64 - 8;
             return;
           }
           break;
+        }
+        case MovementDirection::kDown: {
+          bool isBottomInside = (y + 8) > collisionRect.y &&
+                               (y + 8) < (collisionRect.y + collisionRect.h);
+          bool isLeftInside =
+              x < (collisionRect.x + collisionRect.w) && x >= collisionRect.x;
+          bool isRightInside =
+              (x + 16) <= (collisionRect.x + collisionRect.w) &&
+              (x + 16) > collisionRect.x;
+          if (isBottomInside && (isLeftInside || isRightInside)) {
+            gamoraPosRect.y = collisionRect.y - 8 + 64 - 8;
+            return;
+          }
+          break;
+        }
       }
-      // Check lateral
-      if(direction == MovementDirection::kLeft) {
-        // check right side of rectangle
-        
-      }
-
-      // Check vertical
     }
   }
 }
