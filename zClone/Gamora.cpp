@@ -4,7 +4,7 @@
 #include <cmath>
 #include <vector>
 
-Gamora::Gamora() : sprite_sheet_(nullptr), pos_rect_({0,0,16,16}), sprite_({16,16}), overworld_(nullptr) {}
+Gamora::Gamora() : sprite_sheet_(nullptr), pos_rect_({0,0,16,16}), gamora_sprite_({16,16}), overworld_(nullptr) {}
 
 Gamora::~Gamora() {
   if(sprite_sheet_) {
@@ -22,57 +22,57 @@ void Gamora::Init(Screen& screen, SDL_Surface* spriteSheetSurface, Overworld& ov
   std::vector<Frame> upFrames;
   upFrames.push_back({frameTime, 0, 0, SDL_FLIP_NONE});
   upFrames.push_back({frameTime, 16, 0, SDL_FLIP_NONE});
-  sprite_.AddAnimation("up", upFrames);
+  gamora_sprite_.AddAnimation("up", upFrames);
 
   std::vector<Frame> downFrames;
   downFrames.push_back({frameTime, 0, 16, SDL_FLIP_NONE});
   downFrames.push_back({frameTime, 16, 16, SDL_FLIP_NONE});
-  sprite_.AddAnimation("down", downFrames);
+  gamora_sprite_.AddAnimation("down", downFrames);
 
   frameTime = 125;
   std::vector<Frame> rightFrames;
   rightFrames.push_back({frameTime, 0, 32, SDL_FLIP_NONE});
   rightFrames.push_back({frameTime, 16, 32, SDL_FLIP_NONE});
-  sprite_.AddAnimation("right", rightFrames);
+  gamora_sprite_.AddAnimation("right", rightFrames);
 
   std::vector<Frame> leftFrames;
   leftFrames.push_back({frameTime, 0, 32, SDL_FLIP_HORIZONTAL});
   leftFrames.push_back({frameTime, 16, 32, SDL_FLIP_HORIZONTAL});
-  sprite_.AddAnimation("left", leftFrames);
-  sprite_.SetCurrentAnimation("down");
+  gamora_sprite_.AddAnimation("left", leftFrames);
+  gamora_sprite_.SetCurrentAnimation("down");
 }
 
 void Gamora::Update(int dt) {
   float moveAmount = dt / 1000.0f * speed_;
 
-  sprite_.Play();
+  gamora_sprite_.Play();
   switch(direction()) { 
   case MovementDirection::kDown:
-    sprite_.SetCurrentAnimation("down");
+    gamora_sprite_.SetCurrentAnimation("down");
     MoveBy(0, moveAmount);
     break;
   case MovementDirection::kUp:
-    sprite_.SetCurrentAnimation("up");
+    gamora_sprite_.SetCurrentAnimation("up");
     MoveBy(0, -moveAmount);
     break;
   case MovementDirection::kLeft:
-    sprite_.SetCurrentAnimation("left");
+    gamora_sprite_.SetCurrentAnimation("left");
     MoveBy(-moveAmount, 0);
     break;
   case MovementDirection::kRight:
-    sprite_.SetCurrentAnimation("right");
+    gamora_sprite_.SetCurrentAnimation("right");
     MoveBy(moveAmount, 0);
     break;
   case MovementDirection::kNone:
-    sprite_.Stop();
+    gamora_sprite_.Stop();
     break;
   }
 
-  sprite_.Update(dt);
+  gamora_sprite_.Update(dt);
 }
 
 void Gamora::Draw(Screen& screen) {
-  sprite_.Draw(screen, sprite_sheet_, pos_rect_);
+  gamora_sprite_.Draw(screen, sprite_sheet_, pos_rect_);
 }
 
 void Gamora::Stop() {}

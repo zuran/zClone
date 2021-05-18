@@ -23,8 +23,10 @@ class Gamora : public Actor {
   SDL_Texture* sprite_sheet_;
   SDL_Rect pos_rect_;
 
-  AnimatedSprite sprite_;
+  AnimatedSprite gamora_sprite_;
+  AnimatedSprite attack_sprite_;
 
   float speed_ = 100.0f;
   Overworld* overworld_;
+  bool isAttacking = false;
 };
