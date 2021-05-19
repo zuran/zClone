@@ -4,7 +4,12 @@
 #include <cmath>
 #include <vector>
 
-Gamora::Gamora() : sprite_sheet_(nullptr), pos_rect_({0,0,16,16}), gamora_sprite_({16,16}), overworld_(nullptr) {}
+Gamora::Gamora()
+    : sprite_sheet_(nullptr),
+      pos_rect_({0, 0, 16, 16}),
+      gamora_sprite_({16, 16}),
+      overworld_(nullptr),
+      attack_sprite_({16, 16}) {}
 
 Gamora::~Gamora() {
   if(sprite_sheet_) {

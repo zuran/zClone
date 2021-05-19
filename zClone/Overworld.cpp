@@ -1,3 +1,15 @@
+// Initially the overworld is drawn with a single area. I need to create
+// additional tiles before I can complete it, though placeholders should work
+// for testing screen transitions and area loading. To start with, the full
+// overworld map is drawn to the full_map_ texture after tiles are loaded. Then
+// the starting area is loaded (need a LoadArea(x, y) function). In addition
+// to overworld area transitions, caves and dungeon entrances need transitions.
+// My plan is to add these to the json using special objects. The object will
+// need properties to store the name of the area to load (or x and y on another
+// plane), as well as the x and y of Gamora's position when the cave or dungeon
+// is loaded. I should also pass a "return" location on the overworld map, so
+// we know what area and position to place Gamora upon leaving the cave.
+
 #include "Overworld.h"
 #include "Screen.h"
 
