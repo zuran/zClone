@@ -4,6 +4,9 @@
 // buffer is copied to the (scaled) window surface. Clear() is only called on
 // the back buffer.
 //
+// Screen also does drawing to other textures such as the overworld map.
+// Perhaps I should move this to its own class where the renderer is retrieved.
+//
 
 #include "Screen.h"
 

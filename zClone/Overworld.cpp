@@ -135,7 +135,7 @@ void Overworld::SetSafeLocationIfColliding(SDL_Rect& gamoraPosRect, MovementDire
     overlappingTileIds.push_back(tileCols * (tileY + 1) + tileX + 1); 
   }
 
-  // Check collisions
+  // Check terrain collisions
   for(size_t i = 0; i < overlappingTileIds.size(); ++i) {
     int tileId = area_data_[overlappingTileIds[i]] - 1;
     auto it = tile_collisions_.find(tileId);
