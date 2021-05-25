@@ -25,5 +25,6 @@ class Overworld {
   int current_area_x = 0;
   int current_area_y = 0;
   std::map<int, std::vector<SDL_Rect>> tile_collisions_;
+  std::vector<int> overworld_data_;
   std::vector<int> area_data_;
 };

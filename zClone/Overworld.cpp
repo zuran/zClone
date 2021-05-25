@@ -58,7 +58,7 @@ void Overworld::Init(Screen& screen) {
   SDL_FreeSurface(overworldSpritesImage);
 
   // Using width, height, and data
-  area_data_ = j["layers"][0]["data"].get<std::vector<int>>();
+  overworld_data_ = j["layers"][0]["data"].get<std::vector<int>>();
   int dataWidth = j["layers"][0]["width"].get<int>();
   int dataHeight = j["layers"][0]["height"].get<int>();
 
@@ -67,7 +67,7 @@ void Overworld::Init(Screen& screen) {
 
   // Loop through data array and render tiles to the full_map_ texture
   int tilesetColumns = j["tilesets"][0]["columns"].get<int>();
-  screen.DrawOverworldTiles(tiles_, full_map_, area_data_, tilesetColumns, dataWidth,
+  screen.DrawOverworldTiles(tiles_, full_map_, overworld_data_, tilesetColumns, dataWidth,
                             dataHeight);
 
   // Load warp points/doors
@@ -94,6 +94,7 @@ void Overworld::Init(Screen& screen) {
 
   // Construct a vector of area data for discovering collisions, spawn points,
   //  and other points of interest
+  current_area_y = 1;
 }
 
 void Overworld::Update(int dt) {}
