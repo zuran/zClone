@@ -27,4 +27,5 @@ class Overworld {
   std::map<int, std::vector<SDL_Rect>> tile_collisions_;
   std::vector<int> overworld_data_;
   std::vector<int> area_data_;
+  std::vector<SDL_Rect> collisions_to_draw_;
 };

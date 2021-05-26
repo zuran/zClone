@@ -21,6 +21,7 @@ class Screen {
   void DrawOverworldTiles(SDL_Texture* tileset, SDL_Texture* map,
                           std::vector<int> data, int tilesetColumns,
                           int dataWidth, int dataHeight);
+  void DrawCollisionRect(SDL_Rect& collisionRect);
 
   SDL_Texture* CreateTextureFromSurface(SDL_Surface* surface);
   SDL_Texture* CreateTexture(int width, int height);

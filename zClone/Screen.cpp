@@ -101,6 +101,11 @@ void Screen::DrawOverworldTiles(SDL_Texture* tileset, SDL_Texture* map,
   SDL_SetRenderTarget(renderer_, buffer_);
 }
 
+void Screen::DrawCollisionRect(SDL_Rect& collisionRect) {
+  SDL_SetRenderDrawColor(renderer_, 255, 0, 0, 255);
+  SDL_RenderDrawRect(renderer_, &collisionRect);
+}
+
 SDL_Texture* Screen::CreateTextureFromSurface(SDL_Surface* surface) {
   SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer_, surface);
   return texture;

@@ -101,6 +101,9 @@ void Overworld::Update(int dt) {}
 
 void Overworld::Draw(Screen& screen) {
   screen.Draw(full_map_, area_rect_, area_draw_rect_);
+  for(SDL_Rect rect : collisions_to_draw_) {
+    screen.DrawCollisionRect(rect);
+  }
 }
 
 void Overworld::SetSafeLocationIfColliding(SDL_Rect& gamoraPosRect, MovementDirection direction) {
@@ -148,6 +151,7 @@ void Overworld::SetSafeLocationIfColliding(SDL_Rect& gamoraPosRect, MovementDire
       SDL_Rect collisionRect = collisionRects[j];
       collisionRect.x += tileLoc.x * 16;
       collisionRect.y += tileLoc.y * 16;
+      collisions_to_draw_.push_back(collisionRect);
 
       switch (direction) {
         case MovementDirection::kLeft: {
