@@ -31,7 +31,7 @@ class AnimatedSprite {
  private:
   std::map<std::string, std::vector<Frame>> animations_;
   int current_frame_time_;
-  std::string current_animation_;
+  std::string current_animation_name_;
   int current_frame_;
   SDL_Rect frame_rect_;
   SDL_Point frame_center_;
