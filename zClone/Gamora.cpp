@@ -74,6 +74,7 @@ void Gamora::Update(int dt) {
   }
 
   gamora_sprite_.Update(dt);
+  Actor::Update(dt);
 }
 
 void Gamora::Draw(Screen& screen) {
